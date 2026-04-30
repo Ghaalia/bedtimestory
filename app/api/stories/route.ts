@@ -3,6 +3,12 @@ import { z } from "zod";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { runPipeline } from "@/lib/ai/pipeline";
+import { waitUntil } from "@vercel/functions";
+
+// Stable Horde generations can take 1-3 min. We need this much headroom on
+// Vercel; on Hobby this is the maximum allowed (60s — pipeline must run via
+// waitUntil so it survives past the response shipping).
+export const maxDuration = 60;
 
 const Body = z.object({
   childName: z.string().min(1).max(40),
@@ -41,7 +47,8 @@ export async function POST(req: Request) {
 
   // Fire-and-forget: drive the pipeline in the background. We intentionally do
   // not await so the response returns instantly; the client polls for status.
-  void runPipeline(story.id);
+  // waitUntil() keeps the function alive on Vercel after the response ships.
+  waitUntil(runPipeline(story.id));
 
   return NextResponse.json({ id: story.id }, { status: 201 });
 }

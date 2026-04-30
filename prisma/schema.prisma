@@ -3,7 +3,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -14,12 +14,12 @@ model Account {
   type              String
   provider          String
   providerAccountId String
-  refresh_token     String?
-  access_token      String?
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
   expires_at        Int?
   token_type        String?
   scope             String?
-  id_token          String?
+  id_token          String? @db.Text
   session_state     String?
   user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
@@ -63,14 +63,14 @@ model Story {
   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   childName    String
   childAge     Int?
-  funnyThing   String
-  niceThing    String
-  badThing     String
+  funnyThing   String   @db.Text
+  niceThing    String   @db.Text
+  badThing     String   @db.Text
   mood         String   @default("calm")
   title        String?
   status       String   @default("PENDING")
-  errorMessage String?
-  characterRef String?
+  errorMessage String?  @db.Text
+  characterRef String?  @db.Text
   scenes       Scene[]
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
@@ -83,8 +83,8 @@ model Scene {
   storyId     String
   story       Story   @relation(fields: [storyId], references: [id], onDelete: Cascade)
   index       Int
-  text        String
-  imagePrompt String
+  text        String  @db.Text
+  imagePrompt String  @db.Text
   imageUrl    String?
   audioUrl    String?
   durationMs  Int?
