@@ -1,0 +1,13 @@
+node_modules
+.next
+.env
+.env.local
+.env.*.local
+*.tsbuildinfo
+next-env.d.ts.bak
+.DS_Store
+prisma/dev.db
+prisma/dev.db-journal
+
+# Generated story assets (regenerated at runtime; never check in)
+public/uploads/
